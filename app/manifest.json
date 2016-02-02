@@ -1,0 +1,37 @@
+{
+  "name": "__MSG_appName__",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "__MSG_appDescription__",
+  "icons": {
+    "16": "images/icon-16.png",
+    "128": "images/icon-128.png"
+  },
+  "default_locale": "en",
+  "background": {
+    "scripts": [
+      "scripts/chromereload.js",
+      "scripts/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": [
+        "scripts/findAndReplaceDOMText.js",
+        "scripts/static.js",
+        "scripts/inject.js"
+      ],
+      "css": ["css/inject.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_action": {
+    "default_popup": "html/popup.html",
+    "default_icon": "images/icon-16.png",
+    "default_title": "change min-wage settings"
+  },
+  "permissions": [
+    "storage"
+  ]
+}

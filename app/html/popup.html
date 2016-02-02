@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <!--
+      Font styles courtesy of polymer's paper-styles
+      and google's material design font guidelines.
+
+      Guidelines
+        google.com/design/spec/style/typography.html#typography-styles
+      CSS
+        github.com/PolymerElements/paper-styles/
+     -->
+    <style>
+      body{
+        /* Why not flexbox? */
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        /*justify-content: center;*/
+
+        /* Constant size width for sanity */
+        width: 260px;
+
+        /* Gray background + off-black text */
+        color: #444;
+        background-color: #EEEEEE;
+
+        /* It's fine to stick with sans */
+        font-family: sans-serif;
+        -webkit-font-smoothing: antialiased;
+
+        /* Default body1 size */
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+      }
+      
+      .title{
+        /* Only center the title! */
+        align-self: center;
+
+        /* Specific title size */
+        font-size: 20px;
+        font-weight: 500;
+        line-height: 28px;
+        padding-bottom: 0.2em;
+      }
+
+      .option{
+        /* Horizontal children */
+        flex-direction: row;
+        padding-bottom: 0.3em;
+      }
+
+      #wage{
+        /* Specific subheading */
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
+      }
+    </style>
+  </head>
+<body>
+
+  <div class="title">
+    min-wage
+  </div>
+
+  <div class="option">
+    <input type="checkbox" id="min-wage-disable"/>
+    <label for="min-wage-disable"> Disabled</label>
+  </div>
+
+  <div class="option">
+    <input type="checkbox" id="min-wage-dynamic"/>
+    <label for="min-wage-dynamic">Handle Dynamic Content (slow)</label>
+  </div>
+
+  <div class="option">
+    <label for="country-selector">
+      Choose a country to use
+    </label>  
+    <input id="country-selector" list="country-list">
+    <datalist id="country-list"></datalist>
+
+    <span>$<span id="wage">?.?</span>/hr</span>
+  </div>
+
+<script type="text/javascript" src="../scripts/static.js"></script>
+<script type="text/javascript" src="../scripts/popup.js"></script>
+
+</body>
+</html>

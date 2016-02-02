@@ -1,0 +1,39 @@
+/*
+  Show the original price on hover
+*/
+
+.min-wage-replacement{
+  position: relative !important;
+}
+
+.min-wage-replacement:hover{
+  background-color: red;
+}
+
+
+.min-wage-replacement:hover:before {
+  /* Grab the content from the data attribute */
+  content: attr(data-original-text);
+
+  display: block;
+
+  /* Set it to be just below its parent */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+
+  /* Grey on black */
+  color: #888;
+  background: #000;
+
+  /* A little space */
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-right: 0.5em;
+
+  /* Attempting to handle overflow issues... */
+  z-index: 20;
+  width: 100%;
+  max-width: 1000px;
+}
