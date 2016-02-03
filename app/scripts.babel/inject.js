@@ -1,9 +1,5 @@
 'use strict';
 
-console.log(chrome.storage);
-
-console.log(countries);
-
 let Patterns = {
   whitespace: /\s+/,
   cash: /\$\s*[0-9,]+(?:\s*\.\s*\d+)?(?:\s*(trillion|billion|million|thousand))?(?:(k|m|b))?/gi

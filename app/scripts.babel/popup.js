@@ -13,22 +13,17 @@ function populateCountryList() {
 
 }
 
-// Grab the country stored in the backend!
+
 function populateCountrySelector(country) {
   let c = countrySelector();
   c.value = country;
 }
 
-function countrySelector() {
-  return document.querySelector('#country-selector');
-}
-
-function dynamicToggle() {
-  return document.querySelector('#min-wage-dynamic');
-}
-
-function disableToggle() {
-  return document.querySelector('#min-wage-disable');
+// Insert the relevant value from the selector
+function populateWage(country) {
+  let container = document.querySelector('#wage');
+  let hourly = countries[country].hourly;
+  container.textContent = hourly;
 }
 
 // Gets the preference for a given checkbox with an associated
@@ -45,15 +40,16 @@ function getPrefsCheckbox(prefs, name, standard = false) {
 
 }
 
-// Insert the relevant value from the selector
-function populateWage(country) {
-  let container = document.querySelector('#wage');
-  let hourly = countries[country].hourly;
-  container.textContent = hourly;
-}
+// Package up repeatedly elements as simple functions
+let countrySelector = ()=> document.querySelector('#country-selector');
+
+let dynamicToggle = ()=> document.querySelector('#min-wage-dynamic');
+
+let disableToggle = ()=> document.querySelector('#min-wage-disable');
 
 // Setup everything we need to listen to keep preferences current
 function setInputListeners() {
+
   countrySelector().addEventListener('input', (e)=>{
     // Handle values we know
     let c = countrySelector().value;
@@ -84,22 +80,23 @@ function setInputListeners() {
 
 (function(document) {
 
-  console.log(document);
-
   // Grab global preferences
   chrome.storage.local.get((prefs)=>{
-    // Set the country as necessary
+
+    // Get country or set to default
     let country = prefs.country;
-    if (!Object.keys(countries).includes(country)) country = 'United States';
+    if (!countries.hasOwnProperty(country)) country = 'United States';
 
     // Set checkboxes as necessary
     dynamicToggle().checked = getPrefsCheckbox(prefs, 'dynamic', true);
     disableToggle().checked = getPrefsCheckbox(prefs, 'disabled', false);
 
+    // Set inital selector state
     populateCountryList();
     populateCountrySelector(country);
     populateWage(country);
 
+    // Listen for user interaction
     setInputListeners();
 
   });

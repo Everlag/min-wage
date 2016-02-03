@@ -15,4 +15,3 @@ let countries = {};
 Object.keys(all)
   .filter((c)=> all[c].hourly > 3)
   .forEach((c)=> countries[c] = all[c]);
-console.log(countries);
