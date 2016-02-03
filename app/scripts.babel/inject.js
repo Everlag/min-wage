@@ -2,19 +2,7 @@
 
 console.log(chrome.storage);
 
-// If we're not ready, wait then check again.
-function checkReady() {
-  if (!document.readyState) {
-    setTimeout(runReplaces, 30);
-  }else{
-    runReplaces();
-    // setInterval(runReplaces, 100);
-  }
-}
-
 console.log(countries);
-
-let CurrentCountry = 'Canada';
 
 let Patterns = {
   whitespace: /\s+/,
@@ -71,16 +59,14 @@ function formatHours(hours, relHours) {
   return `${fixed1(scaled)}y`;
 }
 
-function runReplaces() {
+function runReplaces(country, dynamic, debug = false) {
 
   let start = performance.now();
 
-  console.log('min-wage doing it live!');
-
   // Grab our current hourly rate
   // and hours in a week
-  let hourly = countries[CurrentCountry].hourly;
-  let week = countries[CurrentCountry].week;
+  let hourly = countries[country].hourly;
+  let week = countries[country].week;
 
   // How many hours in each unit of time,
   // we need to know the work week of
@@ -125,10 +111,10 @@ function runReplaces() {
     }
 
     // Preprocess by converting words into numbers and squishing whitespace
-    text = text.replace(/\s*thousand/, 'k')
-               .replace(/\s*million/, 'm')
-               .replace(/\s*billion/, 'b')
-               .replace(/\s*trillion/, 't');
+    text = text.replace(/\s*thousand/i, 'k')
+               .replace(/\s*million/i, 'm')
+               .replace(/\s*billion/i, 'b')
+               .replace(/\s*trillion/i, 't');
 
     // Apply any potential suffixes
     let suffix = text[text.length - 1].toLowerCase();
@@ -154,13 +140,22 @@ function runReplaces() {
   let end = performance.now();
   let diff = end - start;
 
-  console.log(
-  `
+  // If we're supposed to dynamically update and this run
+  // didn't take longer than 150ms, run again later.
+  if (dynamic && diff < 150){
+    setTimeout(()=> runReplaces(country, dynamic), 200);
+  }
 
-    min-wage executed in ${diff.toFixed(2)}ms
-    ${replacements} replacements were performed
+  if (replacements > 0 && debug){
+    console.log(
+    `
 
-  `);
+      min-wage executed in ${diff.toFixed(2)}ms
+      ${replacements} replacements were performed
+
+    `);
+  }
+
 }
 
 let TemplateElement = document.createElement('span');
@@ -176,111 +171,23 @@ function newTemplateInstance(newText, originalText) {
   return instance;
 }
 
-// Go along the textNodes and do our element-wise replacements
-//
-// Also, take into consideration that we need to look for the $ prefix.
-// function injectReplacements(textNodes, found) {
-//   let cursor = 0;
-//   // Order what we found to be more convenient for popping
-//   // while not buggering up the cursor.
-//   let closest = found.reverse().pop();
 
-//   textNodes.forEach((n)=>{
+// Grab global preferences, we only run at document idle so
+// no need to wait for dom ready.
+chrome.storage.local.get((prefs)=>{
+  // Set the country as necessary
+  let country = prefs.country;
+  if (!Object.keys(countries).includes(country)) country = 'United States';
 
-//     // Account for our new position
-//     cursor += n.textContent.length;
+  // Stop if we're not supposed to be running.
+  if (prefs.hasOwnProperty('disabled') && prefs.disabled) return;
 
-//     // Perform all necessary injections,
-//     // there may be more than one on large text nodes!
-//     while(cursor >= closest.pos){
+  // See if we're supposed to be updating regularly
+  let dynamic = false;
+  dynamic = prefs.hasOwnProperty('dynamic') && prefs.dynamic;
 
-//       let payload = newTemplateInstance(closest);
+  // Check if we're supposed to be providing stats live.
+  let debug = prefs.hasOwnProperty('debug') && prefs.debug;
 
-//       elementReplace(n, payload, closest.originalText);
-
-//       closest = found.pop();
-
-//     }
-
-//   });
-
-//   console.log('?!');
-// }
-
-// // Deduplicate and sort what we found
-// function cleanFound(ints) {
-//   let deduper = new Set(ints);
-//   let clean = [];
-//   deduper.forEach((p)=> clean.push(p));
-//   // Sort the positions so we can simply pop
-//   clean.sort((a, b)=> a.pos - b.pos);
-
-//   return clean;
-// }
-
-// let TemplateElement = document.createElement('span');
-
-// // Efficiently grabs all text nodes for an element.
-// //
-// // Courtesy of
-// // http://stackoverflow.com/questions/10730309/find-all-text-nodes-in-html-page
-// function textNodesUnder(el){
-//   let a = [];
-//   let walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-
-//   let n = walk.nextNode();
-
-//   while(n){
-//     a.push(n);
-//     n = walk.nextNode();
-//   }
-
-//   return a;
-// }
-
-// // Inserts el into the provided text node where 'text' would first appear.
-// //
-// // Returns the text node that comes after the element.
-// //
-// // This splits the text node into three sections,
-// //  TEXT_NODE | el | TEXT_NODE
-// // where the text nodes on either side are comprised of the leftover text.
-// function elementReplace(textNode, el, pattern) {
-
-//   let parent = textNode.parentNode;
-//   if (textNode.nodeName !== '#text') {
-//     parent = textNode;
-//   }
-//   return;
-
-//   // let nodeText = textNode.textContent;
-//   // let splitPos = nodeText.toLowerCase().indexOf(pattern);
-//   // let sides = [
-//   //               nodeText.slice(0, splitPos),
-//   //               // Clean up characters other than just the first
-//   //               nodeText.slice(splitPos + pattern.length)
-//   //             ];
-
-//   // let leftSide = document.createTextNode(sides[0]);
-//   // let rightSide = document.createTextNode(sides[1]);
-//   // // Insert left side
-//   // if (sides[0].length > 0) {
-//   //   parent.insertBefore(leftSide, textNode);
-//   // }
-//   // // Insert right side
-//   // if (sides[1].length > 0) {
-//   //   parent.insertBefore(rightSide, textNode.nextSibling);
-//   // }
-
-//   // if (el.textContent.includes('10')) {
-//   //   console.log(leftSide, rightSide);
-//   //   console.log(textNode, parent, 'ehhh');
-//   // }
-
-//   // // Insert the desired element
-//   // //
-//   // // Done last as the sides use the textNode as a positional anchor.
-//   // parent.replaceChild(el, textNode);
-// }
-
-checkReady();
+  runReplaces(country, dynamic, debug);
+});

@@ -104,4 +104,10 @@ function setInputListeners() {
 
   });
 
+  // Set our debug state
+  chrome.management.getSelf((r)=>{
+    let debug = r.installType === 'development';
+    chrome.storage.local.set({'debug': debug});
+  });
+
 })(document);
