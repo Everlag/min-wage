@@ -18,7 +18,7 @@ let CurrentCountry = 'Canada';
 
 let Patterns = {
   whitespace: /\s+/,
-  cash: /\$\s*[0-9,]+(?:\s*\.\s*\d+)?(?:[k,m,b])?/gi
+  cash: /\$\s*[0-9,]+(?:\s*\.\s*\d+)?(?:\s*(trillion|billion|million|thousand))?(?:(k|m|b))?/gi
 };
 
 // Return the a float rounding to 1 decimal point.
@@ -104,9 +104,10 @@ function runReplaces() {
   // This allows us to support values such as $100K
   // as some years instead of 'xhrK'
   let suffixes = {
-    k: 1000,
-    m: 1000000,
-    b: 1000000000
+    'k': 1000,
+    'm': 1000000,
+    'b': 1000000000,
+    't': 1000000000000
   };
 
   let replacements = 0;
@@ -122,6 +123,12 @@ function runReplaces() {
       // the way styling is done.
       return found.text;
     }
+
+    // Preprocess by converting words into numbers and squishing whitespace
+    text = text.replace(/\s*thousand/, 'k')
+               .replace(/\s*million/, 'm')
+               .replace(/\s*billion/, 'b')
+               .replace(/\s*trillion/, 't');
 
     // Apply any potential suffixes
     let suffix = text[text.length - 1].toLowerCase();
