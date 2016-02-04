@@ -52,7 +52,7 @@ function formatHours(hours, relHours) {
 
   // Default to years, decades are unnecessary.
   scaled = hours / relHours.year;
-  return `${fixed1(scaled)}y`;
+  return `${fixed1(scaled)}yr`;
 }
 
 function runReplaces(country, dynamic,
