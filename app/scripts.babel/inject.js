@@ -62,7 +62,7 @@ function formatHours(hours, relHours) {
   return `${fixed1(scaled)}yr`;
 }
 
-function runReplaces(country, dynamic,
+function runReplaces(country, dynamic, hover,
   debug = false, replacements = 0) {
 
   let start = performance.now();
@@ -133,7 +133,7 @@ function runReplaces(country, dynamic,
 
     freshReplacements++;
 
-    return newTemplateInstance(time, found.text);
+    return newTemplateInstance(time, found.text, hover);
   };
 
   // Perform replacements as necessary
@@ -149,7 +149,7 @@ function runReplaces(country, dynamic,
   // If we're supposed to dynamically update and this run
   // didn't take longer than 150ms, run again later.
   if (dynamic && diff < 150){
-    setTimeout(()=> runReplaces(country, dynamic,
+    setTimeout(()=> runReplaces(country, dynamic, hover,
       debug, freshReplacements + replacements), 200);
   }
 
@@ -175,11 +175,12 @@ let TemplateElement = document.createElement('span');
 // Return an instance of the template element we use
 // with everything necessary set given its content
 // and original data.
-function newTemplateInstance(newText, originalText) {
+function newTemplateInstance(newText, originalText, hover) {
   let instance = TemplateElement.cloneNode(true);
   instance.textContent = newText;
   instance.dataset.originalText = originalText;
-  instance.classList.add('min-wage-replacement');
+  // Add a class to apply hovering
+  if (hover) instance.classList.add('min-wage-replacement');
   return instance;
 }
 
@@ -187,6 +188,8 @@ function newTemplateInstance(newText, originalText) {
 // Grab global preferences, we only run at document idle so
 // no need to wait for dom ready.
 chrome.storage.local.get((prefs)=>{
+  console.log(prefs);
+
   // Set the country as necessary
   let country = prefs.country;
   if (!Object.keys(countries).includes(country)) country = 'United States';
@@ -198,8 +201,12 @@ chrome.storage.local.get((prefs)=>{
   let dynamic = false;
   dynamic = prefs.hasOwnProperty('dynamic') && prefs.dynamic;
 
+  // Check if original prices should appear in a tooltip on hover
+  let hover = true;
+  if (prefs.hasOwnProperty('hover')) hover = prefs.hover;
+
   // Check if we're supposed to be providing stats live.
   let debug = prefs.hasOwnProperty('debug') && prefs.debug;
 
-  runReplaces(country, dynamic, debug);
+  runReplaces(country, dynamic, hover, debug);
 });

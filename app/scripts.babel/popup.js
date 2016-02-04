@@ -47,6 +47,8 @@ let dynamicToggle = ()=> document.querySelector('#min-wage-dynamic');
 
 let disableToggle = ()=> document.querySelector('#min-wage-disable');
 
+let hoverToggle = ()=> document.querySelector('#min-wage-hover');
+
 // Setup everything we need to listen to keep preferences current
 function setInputListeners() {
 
@@ -76,6 +78,14 @@ function setInputListeners() {
     chrome.storage.local.set({'disabled': disableToggle().checked});
 
   });
+
+    // Listen for changes to user's desire to handle dynamic content
+  hoverToggle().addEventListener('change', ()=>{
+
+    // Persist
+    chrome.storage.local.set({'hover': hoverToggle().checked});
+
+  });
 }
 
 (function(document) {
@@ -90,6 +100,7 @@ function setInputListeners() {
     // Set checkboxes as necessary
     dynamicToggle().checked = getPrefsCheckbox(prefs, 'dynamic', false);
     disableToggle().checked = getPrefsCheckbox(prefs, 'disabled', false);
+    hoverToggle().checked = getPrefsCheckbox(prefs, 'hover', true);
 
     // Set inital selector state
     populateCountryList();
