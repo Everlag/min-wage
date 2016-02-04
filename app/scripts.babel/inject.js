@@ -55,7 +55,8 @@ function formatHours(hours, relHours) {
   return `${fixed1(scaled)}y`;
 }
 
-function runReplaces(country, dynamic, debug = false) {
+function runReplaces(country, dynamic,
+  debug = false, replacements = 0) {
 
   let start = performance.now();
 
@@ -92,9 +93,8 @@ function runReplaces(country, dynamic, debug = false) {
     't': 1000000000000
   };
 
-  let replacements = 0;
+  let freshReplacements = 0;
   let patternProcessor = (found)=> {
-    replacements++;
 
     let text = found.text.replace('$', '').replace(/,/g, '');
     let parsed = parseFloat(text);
@@ -124,9 +124,12 @@ function runReplaces(country, dynamic, debug = false) {
     let time = formatHours(hours, relHours);
     if (found.node.textContent.length > 10) time = clock + time;
 
+    freshReplacements++;
+
     return newTemplateInstance(time, found.text);
   };
 
+  // Perform replacements as necessary
   findAndReplaceDOMText(document.body, {
     find: Patterns.cash,
     replace: patternProcessor,
@@ -139,18 +142,24 @@ function runReplaces(country, dynamic, debug = false) {
   // If we're supposed to dynamically update and this run
   // didn't take longer than 150ms, run again later.
   if (dynamic && diff < 150){
-    setTimeout(()=> runReplaces(country, dynamic), 200);
+    setTimeout(()=> runReplaces(country, dynamic,
+      debug, freshReplacements + replacements), 200);
   }
 
-  if (replacements > 0 && debug){
+  if (freshReplacements > 0 && debug){
     console.log(
     `
 
       min-wage executed in ${diff.toFixed(2)}ms
-      ${replacements} replacements were performed
+      ${freshReplacements} replacements were performed
 
     `);
   }
+
+  chrome.runtime.sendMessage({
+    subject: 'badge',
+    count: replacements + freshReplacements
+  });
 
 }
 
