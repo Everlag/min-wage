@@ -2,7 +2,14 @@
 
 let Patterns = {
   whitespace: /\s+/,
-  cash: /\$\s*[0-9,]+(?:\s*\.\s*\d+)?(?:\s*(trillion|billion|million|thousand))?(?:(k|m|b))?/gi
+  // Explanation by logical grouping
+  //
+  //  $ as a flag, any replacement requires $ as a prefix
+  //  handle any number of whole numbers as well as decimals
+  //  prevent selecting otherwise valid strings with our suffixes
+  //  OPTIONAL select word-length suffixes with any amount of whitespace
+  //  OPTIONAL select single character suffixes, no whitespace allowed
+  cash: /\$\s*[0-9,]+(?:\s*\.\s*\d+)?(?![^\s]*(sec|min|hr|day|wk|mo|yr))(?:\s*(trillion|billion|million|thousand))?(?:(k|m|b))?/gi
 };
 
 // Return the a float rounding to 1 decimal point.
