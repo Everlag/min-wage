@@ -1,8 +1,8 @@
 {
-  "name": "__MSG_appName__",
-  "version": "0.0.1",
+  "name": "Min-Wage Frame",
+  "version": "0.0.4",
   "manifest_version": 2,
-  "description": "__MSG_appDescription__",
+  "description": "View prices as time spent working minimum wage.",
   "icons": {
     "16": "images/icon-16.png",
     "48": "images/icon-48.png",
