@@ -98,8 +98,8 @@ function setInputListeners() {
     if (!countries.hasOwnProperty(country)) country = 'United States';
 
     // Set checkboxes as necessary
-    dynamicToggle().checked = getPrefsCheckbox(prefs, 'dynamic', false);
     disableToggle().checked = getPrefsCheckbox(prefs, 'disabled', false);
+    dynamicToggle().checked = getPrefsCheckbox(prefs, 'dynamic', true);
     hoverToggle().checked = getPrefsCheckbox(prefs, 'hover', true);
 
     // Set inital selector state

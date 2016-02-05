@@ -198,8 +198,8 @@ chrome.storage.local.get((prefs)=>{
   if (prefs.hasOwnProperty('disabled') && prefs.disabled) return;
 
   // See if we're supposed to be updating regularly
-  let dynamic = false;
-  dynamic = prefs.hasOwnProperty('dynamic') && prefs.dynamic;
+  let dynamic = true;
+  if (prefs.hasOwnProperty('dynamic')) dynamic = prefs.dynamic;
 
   // Check if original prices should appear in a tooltip on hover
   let hover = true;
