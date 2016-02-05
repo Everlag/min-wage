@@ -62,7 +62,7 @@ gulp.task('copy-npm-dependencies', ()=>{
 gulp.task('html',  () => {
   const assets = $.useref.assets({searchPath: ['.tmp', 'app', '.']});
 
-  return gulp.src('app/*.html')
+  return gulp.src('app/**/*.html')
     .pipe(assets)
     .pipe($.sourcemaps.init())
     .pipe($.if('*.js', $.uglify()))
@@ -98,7 +98,8 @@ gulp.task('babel', (done) => {
         presets: ['es2015']
       }))
       .on('error', swallowError)
-      .pipe(gulp.dest('app/scripts'));
+      .pipe(gulp.dest('app/scripts'))
+      .pipe(gulp.dest('dist/scripts'));
 });
 
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
